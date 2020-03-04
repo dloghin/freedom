@@ -6,7 +6,7 @@ MODEL := E300ArtyDevKitFPGAChip
 PROJECT := sifive.freedom.everywhere.e300artydevkit
 export CONFIG_PROJECT := sifive.freedom.everywhere.e300artydevkit
 export CONFIG := E300ArtyDevKitConfig
-export BOARD := arty
+export BOARD := arty_a7_100
 export BOOTROM_DIR := $(base_dir)/bootrom/xip
 
 rocketchip_dir := $(base_dir)/rocket-chip

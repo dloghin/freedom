@@ -24,7 +24,7 @@ class DefaultFreedomEConfig extends Config (
   new WithL1ICacheWays(2)        ++
   new WithL1ICacheSets(128)      ++
   new WithDefaultBtb             ++
-  new TinyConfig
+  new TinyFPUConfig
 )
 
 // Freedom E300 Arty Dev Kit Peripherals

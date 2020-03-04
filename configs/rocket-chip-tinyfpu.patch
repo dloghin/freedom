@@ -1,0 +1,71 @@
+diff --git a/src/main/scala/subsystem/Configs.scala b/src/main/scala/subsystem/Configs.scala
+index 2d0d5ed9..731f412e 100644
+--- a/src/main/scala/subsystem/Configs.scala
++++ b/src/main/scala/subsystem/Configs.scala
+@@ -103,6 +103,47 @@ class With1TinyCore extends Config((site, here, up) => {
+   ))
+ })
+ 
++class With1Tiny64bitCore extends Config((site, here, up) => {
++  case XLen => 64
++  case RocketTilesKey => List(RocketTileParams(
++      core = RocketCoreParams(
++        useVM = false,
++        mulDiv = Some(MulDivParams(mulUnroll = 8))),
++      btb = None,
++      dcache = Some(DCacheParams(
++        rowBits = site(SystemBusKey).beatBits,
++        nSets = 256, // 16Kb scratchpad
++        nWays = 1,
++        nTLBEntries = 4,
++        nMSHRs = 0,
++        blockBytes = site(CacheBlockBytes),
++        scratch = Some(0x80000000L))),
++      icache = Some(ICacheParams(
++        rowBits = site(SystemBusKey).beatBits,
++        nSets = 64,
++        nWays = 1,
++        nTLBEntries = 4,
++        blockBytes = site(CacheBlockBytes)))))
++  case RocketCrossingKey => List(RocketCrossingParams(
++    crossingType = SynchronousCrossing(),
++    master = TileMasterPortParams()
++  ))
++})
++
++class With1TinyFPUCore extends Config((site, here, up) => {
++  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
++	  r.copy(core = r.core.copy(
++	    fpu = r.core.fpu.map(_.copy(fLen = 32))))
++	}
++})
++
++class With1Tiny64bitFPUCore extends Config((site, here, up) => {
++  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
++	  r.copy(core = r.core.copy(
++	    fpu = r.core.fpu.map(_.copy(fLen = 64))))
++	}
++})
++
+ class WithNBanks(n: Int) extends Config((site, here, up) => {
+   case BankedL2Key => up(BankedL2Key, site).copy(nBanks = n)
+ })
+diff --git a/src/main/scala/system/Configs.scala b/src/main/scala/system/Configs.scala
+index 488cacc0..e1b10302 100644
+--- a/src/main/scala/system/Configs.scala
++++ b/src/main/scala/system/Configs.scala
+@@ -63,6 +63,14 @@ class TinyConfig extends Config(
+   new With1TinyCore ++
+   new BaseConfig)
+ 
++class TinyFPUConfig extends Config(
++  new WithNoMemPort ++
++  new WithNMemoryChannels(0) ++
++  new WithNBanks(0) ++
++  new With1Tiny64bitCore ++
++  new With1Tiny64bitFPUCore ++
++  new BaseConfig)
++
+ class MemPortOnlyConfig extends Config(
+   new WithNoMMIOPort ++
+   new WithNoSlavePort ++
