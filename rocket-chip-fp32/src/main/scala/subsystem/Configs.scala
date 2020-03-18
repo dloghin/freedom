@@ -130,6 +130,33 @@ class With1Tiny64bitCore extends Config((site, here, up) => {
   ))
 })
 
+class With1Tiny64bitCoreXMem extends Config((site, here, up) => {
+  case XLen => 64
+  case RocketTilesKey => List(RocketTileParams(
+      core = RocketCoreParams(
+        useVM = false,
+        mulDiv = Some(MulDivParams(mulUnroll = 8))),
+      btb = None,
+      dcache = Some(DCacheParams(
+        rowBits = site(SystemBusKey).beatBits,
+        nSets = 8192, // 512Kb scratchpad
+        nWays = 1,
+        nTLBEntries = 4,
+        nMSHRs = 0,
+        blockBytes = site(CacheBlockBytes),
+        scratch = Some(0x80000000L))),
+      icache = Some(ICacheParams(
+        rowBits = site(SystemBusKey).beatBits,
+        nSets = 64,
+        nWays = 1,
+        nTLBEntries = 4,
+        blockBytes = site(CacheBlockBytes)))))
+  case RocketCrossingKey => List(RocketCrossingParams(
+    crossingType = SynchronousCrossing(),
+    master = TileMasterPortParams()
+  ))
+})
+
 class With1TinyFPUCore extends Config((site, here, up) => {
   case RocketTilesKey => up(RocketTilesKey, site) map { r =>
 	  r.copy(core = r.core.copy(

@@ -71,6 +71,14 @@ class TinyFPUConfig extends Config(
   new With1Tiny64bitFPUCore ++
   new BaseConfig)
 
+class TinyFPUXMemConfig extends Config(
+  new WithNoMemPort ++
+  new WithNMemoryChannels(0) ++
+  new WithNBanks(0) ++
+  new With1Tiny64bitCoreXMem ++
+  new With1Tiny64bitFPUCore ++
+  new BaseConfig)
+
 class MemPortOnlyConfig extends Config(
   new WithNoMMIOPort ++
   new WithNoSlavePort ++

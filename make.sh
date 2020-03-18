@@ -1,15 +1,18 @@
 #!/bin/bash
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 [fp32|posit32|posit16|posit8]"
+  echo "Usage: $0 [fp32|posit32|posit16|posit8|fp32xmem]"
   exit 1
 fi
 XFIX=$1
-if [[ "$XFIX" != "fp32" ]] && [[ "$XFIX" != "posit32" ]] && [[ "$XFIX" != "posit16" ]] && [[ "$XFIX" != "posit8" ]]; then
-  echo "Usage: $0 [fp32|posit32|posit16|posit8]"
+if [[ "$XFIX" != "fp32" ]] && [[ "$XFIX" != "posit32" ]] && [[ "$XFIX" != "posit16" ]] && [[ "$XFIX" != "posit8" ]] \
+&& [[ "$XFIX" != "fp32xmem" ]] && [[ "$XFIX" != "posit32xmem" ]]; then
+  echo "Usage: $0 [fp32|posit32|posit16|posit8|fp32xmem|posit32xmem]"
   exit 1
 fi
+SRC_XFIX=`echo $XFIX | cut -d 'x' -f 1`
+
 rm -f rocket-chip
-ln -s rocket-chip-$XFIX rocket-chip
+ln -s rocket-chip-$SRC_XFIX rocket-chip
 cp configs/$XFIX-Config.scala src/main/scala/everywhere/e300artydevkit/Config.scala
 export PATH=$PATH:$HOME/Tools/Xilinx/Vivado/2019.2/bin
 make BOARD=arty_a7_100 -f Makefile.e300artydevkit clean
