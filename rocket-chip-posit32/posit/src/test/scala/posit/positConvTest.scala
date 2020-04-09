@@ -277,6 +277,7 @@ object PositTestConv {
             case 3 => {
                 bit_index = n - 5;
                 x |= (0xF << bit_index);
+                bit_index = bit_index - 1;
             }
         }
         if ( k < -4 || k > 3) {
@@ -344,7 +345,8 @@ object TesterPositToIntPosit extends App {
 class TesterIntToPositPosit(dut : PositIntPosit) extends PeekPokeTester(dut) {
     var aux: Int = 0;
 
-    for (index <- 1 until 10) {
+    // for (index <- 536870912 until 1073741824) {
+    for (index <- 1 until 1024) {
         println("index is: " + index.toString)
         poke(dut.io.i_bits, index)
         step(1)
@@ -356,12 +358,12 @@ class TesterIntToPositPosit(dut : PositIntPosit) extends PeekPokeTester(dut) {
         // println("frac is: " + dut.io.debug_2)
         expect(dut.io.o_bits, aux)
         // expect(dut.io.o_posit.regime_size, 2)
-        val exp = (scala.math.log(index)/scala.math.log(2)).toInt
-        var frac = 0
-        if (exp > 0)
-            frac = index % (1 << exp)
-        expect(dut.io.debug_1, 0)
-        expect(dut.io.debug_2, 0)
+        // val exp = (scala.math.log(index)/scala.math.log(2)).toInt
+        // var frac = 0
+        // if (exp > 0)
+        //    frac = index % (1 << exp)
+        // expect(dut.io.debug_1, 0)
+        // expect(dut.io.debug_2, 0)
     }
     /**/
 }

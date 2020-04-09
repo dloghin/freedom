@@ -111,56 +111,30 @@ class PositIntPosit(es: Int, size: Int) extends Module {
     value := io.i_bits & Cat(0.U, Fill((size - 1), 1.U))
   }
 
+  // exp is the entire exponent: exp = log2(value)
   val exp = Wire(UInt(size.W))
-  exp := 0.U
-  /*
-  when((value & (1.U << 7)) === (1.U << 7)) {
-    exp := 7.U
-  } otherwise {
-    when((value & (1.U << 6)) === (1.U << 6)) {
-      exp := 6.U
-    } otherwise ({
-      when((value & (1.U << 5)) === (1.U << 5)) {
-        exp := 5.U
-      } otherwise ({
-        when((value & (1.U << 4)) === (1.U << 4)) {
-          exp := 4.U
-        } otherwise ({
-          when((value & (1.U << 3)) === (1.U << 3)) {
-            exp := 3.U
-          } otherwise ({
-            when((value & (1.U << 2)) === (1.U << 2)) {
-              exp := 2.U
-            } otherwise ({
-              when((value & (1.U << 1)) === (1.U << 1)) {
-                exp := 1.U
-              } otherwise ({
-                exp := 0.U
-              })
-            })
-          })
-        })
-      })
-    })
-  }
-  */
   exp := size.U - 1.U - PriorityEncoder(Reverse(value))
-  val expShift = Wire(UInt(19.W))
-  expShift := exp;
+  // use a shift of maximum 19 bits width
+  val exp_shift = Wire(UInt(19.W))
 
   val frac = Wire(UInt(size.W))
   val final_frac = Wire(UInt(size.W))
 
   val mask = Wire(UInt(size.W))
-  mask := Fill(size - 1, 1.U)
+  when (exp > 19.U) {
+    exp_shift := exp - 19.U;
+    mask := ((Fill(size, 1.U) & Cat(Fill(size-19, 1.U), Fill(19, 0.U)))) << exp_shift
+  }.otherwise({
+    exp_shift := exp
+    mask := Fill(size, 1.U) << exp_shift
+  })
   // frac := (value & ~(((1.U << (size - 1)) - 1.U) << exp))
-  frac := (value & ~(mask << expShift))
+  frac := (value & ~mask)
 
   val exponent = Wire(UInt(size.W))
   val regime = Wire(UInt(size.W))
   val regime_size = Wire(UInt(size.W))
   exponent := exp % (1.U << es).asUInt()
-  // expShift := exp - 0.U
   val rn = Wire(UInt(19.W))
   rn := (exp >> es) + 1.U
   when(exp >= (1.U << es).asUInt()) {
@@ -172,15 +146,17 @@ class PositIntPosit(es: Int, size: Int) extends Module {
     regime_size := 2.U
   }
   val frac_size = Wire(UInt(size.W))
+  val frac_shift = Wire(UInt(19.W))
   frac_size := size.U - 1.U - regime_size - es.U;
   when(frac_size > exp) {
-    expShift := frac_size - exp
-    final_frac := frac << expShift
+    frac_shift := frac_size - exp
+    final_frac := frac << frac_shift
   }.otherwise {
     when(frac_size < exp) {
-      expShift := exp - frac_size
-      final_frac := frac << expShift
+      frac_shift := exp - frac_size
+      final_frac := frac << frac_shift
     } .otherwise({
+      frac_shift := 0.U
       final_frac := frac
     })
   }
@@ -194,7 +170,7 @@ class PositIntPosit(es: Int, size: Int) extends Module {
   io.o_posit.exponent_size := es.U
   io.o_posit.fraction_size := frac_size
   io.o_posit.max_exponent_size := max_exponent_size
-  io.debug_1 := exp
+  io.debug_1 := final_frac
   io.debug_2 := exponent
 
   when(io.i_bits === 0.U) {
