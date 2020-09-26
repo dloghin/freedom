@@ -94,7 +94,7 @@ def iterate_by_n(it, n):
                         'Iterable length not evenly divisible by {}'.format(n)
                     )
                 else:
-                    raise
+                    return
         yield batch
 
 

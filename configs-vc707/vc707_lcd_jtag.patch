@@ -1,0 +1,48 @@
+diff --git a/src/main/scala/shell/JTAGDebugOverlay.scala b/src/main/scala/shell/JTAGDebugOverlay.scala
+index 31b7397..9f90a9c 100644
+--- a/src/main/scala/shell/JTAGDebugOverlay.scala
++++ b/src/main/scala/shell/JTAGDebugOverlay.scala
+@@ -18,6 +18,7 @@ class FPGAJTAGIO extends Bundle {
+   val jtag_TMS = Input(Bool())
+   val jtag_TDI = Input(Bool())
+   val jtag_TDO = Output(Bool())
++  val srst_n = Input(Bool())
+ }
+ 
+ abstract class JTAGDebugOverlay(
+diff --git a/src/main/scala/shell/xilinx/VC707NewShell.scala b/src/main/scala/shell/xilinx/VC707NewShell.scala
+index 1531ae6..3cd20ac 100644
+--- a/src/main/scala/shell/xilinx/VC707NewShell.scala
++++ b/src/main/scala/shell/xilinx/VC707NewShell.scala
+@@ -102,6 +102,7 @@ class ChipLinkVC707Overlay(val shell: VC707Shell, val name: String, params: Chip
+ class JTAGDebugVC707Overlay(val shell: VC707Shell, val name: String, params: JTAGDebugOverlayParams)
+   extends JTAGDebugXilinxOverlay(params)
+ {
++  /*
+   shell { InModuleBody {
+     shell.sdc.addClock("JTCK", IOPin(io.jtag_TCK), 10)
+     shell.sdc.addGroup(clocks = Seq("JTCK"))
+@@ -117,6 +118,23 @@ class JTAGDebugVC707Overlay(val shell: VC707Shell, val name: String, params: JTA
+       shell.xdc.addPullup(io)
+     } }
+   } }
++   */
++  shell { InModuleBody {
++    shell.sdc.addClock("JTCK", IOPin(io.jtag_TCK), 10)
++    shell.sdc.addGroup(clocks = Seq("JTCK"))
++    shell.xdc.clockDedicatedRouteFalse(IOPin(io.jtag_TCK))
++    val packagePinsWithPackageIOs = Seq(("AT42", IOPin(io.jtag_TCK)),
++      ("AR38", IOPin(io.jtag_TMS)),
++      ("AR39", IOPin(io.jtag_TDI)),
++      ("AR42", IOPin(io.srst_n)),
++      ("AT40", IOPin(io.jtag_TDO)))
++
++    packagePinsWithPackageIOs foreach { case (pin, io) => {
++      shell.xdc.addPackagePin(io, pin)
++      shell.xdc.addIOStandard(io, "LVCMOS18")
++      shell.xdc.addPullup(io)
++    } }
++  } }
+ }
+ 
+ case object VC707DDRSize extends Field[BigInt](0x40000000L * 1) // 1GB
