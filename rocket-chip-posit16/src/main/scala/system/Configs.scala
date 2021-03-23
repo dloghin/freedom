@@ -22,6 +22,15 @@ class BaseConfig extends Config(
   new BaseSubsystemConfig()
 )
 
+class DefaultFreedomEConfig extends Config (
+  new WithNBreakpoints(2)        ++
+  new WithNExtTopInterrupts(0)   ++  
+  new WithL1ICacheWays(2)        ++
+  new WithL1ICacheSets(128)      ++
+  new WithDefaultBtb             ++
+  new TinyFPUConfig
+)
+
 class DefaultConfig extends Config(new WithNBigCores(1) ++ new BaseConfig)
 
 class DefaultBufferlessConfig extends Config(

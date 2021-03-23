@@ -53,6 +53,13 @@ class WithNBigCores(n: Int) extends Config((site, here, up) => {
   }
 })
 
+class With1BigFPUCore extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(
+      fpu = r.core.fpu.map(_.copy(fLen = 32))))
+  }
+})
+
 class WithNSmallCores(n: Int) extends Config((site, here, up) => {
   case RocketTilesKey => {
     val small = RocketTileParams(
