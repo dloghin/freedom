@@ -37,10 +37,10 @@ class DefaultFreedomEConfig extends Config (
 */
 
 class DefaultFreedomEConfig extends Config (
-new WithJtagDTM            ++
-new WithNMemoryChannels(1) ++
-new WithNBigCores(1)       ++
-new BaseConfig
+  new WithJtagDTM            ++
+  new WithNMemoryChannels(1) ++
+  new WithNSmallCores(1)     ++
+  new BaseConfig
 )
 
 // Freedom E300 Arty Dev Kit Peripherals

@@ -1,4 +1,5 @@
 # See LICENSE for license details.
+set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets ip_mmcm/inst/clk_in1_mmcm]
 
 # Place the current design
 place_design -directive Explore
