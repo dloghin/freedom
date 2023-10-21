@@ -17,7 +17,7 @@ import sifive.blocks.devices.uart._
 class FreedomU500Config extends Config(
   new WithJtagDTM            ++
   new WithNMemoryChannels(1) ++
-  new WithNBigCores(4)       ++
+  new WithNBigCores(1)       ++
   new BaseConfig
 )
 
@@ -30,7 +30,7 @@ class U500DevKitPeripherals extends Config((site, here, up) => {
   case PeripheryGPIOKey => List(
     GPIOParams(address = BigInt(0x64002000L), width = 4))
   case PeripheryMaskROMKey => List(
-    MaskROMParams(address = 0x10000, name = "BootROM"))
+    MaskROMParams(address = 0x78000000, name = "BootROM"))
 })
 
 // Freedom U500 Dev Kit

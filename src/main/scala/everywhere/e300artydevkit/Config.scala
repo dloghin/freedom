@@ -24,7 +24,7 @@ class DefaultFreedomEConfig extends Config (
   new WithL1ICacheWays(2)        ++
   new WithL1ICacheSets(128)      ++
   new WithDefaultBtb             ++
-  new TinyFPUConfig
+  new TinyFPUXMemConfig
 )
 
 // Freedom E300 Arty Dev Kit Peripherals
@@ -61,7 +61,7 @@ class E300ArtyDevKitConfig extends Config(
     case DTSTimebase => BigInt(32768)
     case JtagDTMKey => new JtagDTMConfig (
       idcodeVersion = 2,
-      idcodePartNum = 0x000,
+      idcodePartNum = 0x001,
       idcodeManufId = 0x489,
       debugIdleCycles = 5)
     case RocketTilesKey => up(RocketTilesKey, site) map { r =>

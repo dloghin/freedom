@@ -7,3 +7,6 @@
 [submodule "nvidia-dla-blocks"]
 	path = nvidia-dla-blocks
 	url = https://github.com/sifive/nvidia-dla-blocks.git
+[submodule "bootrom/freedom-u540-c000-bootloader"]
+	path = bootrom/freedom-u540-c000-bootloader
+	url = https://github.com/keystone-enclave/freedom-u540-c000-bootloader.git
